@@ -1,0 +1,10 @@
+django
+scrapy
+psycopg2-binary
+sqlalchemy
+python-dotenv
+Pillow
+
+
+python manage.py makemigrations
+python manage.py migrate
