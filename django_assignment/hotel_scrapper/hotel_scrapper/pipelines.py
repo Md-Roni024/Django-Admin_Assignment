@@ -34,23 +34,22 @@ class HotelPipeline:
         Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine)
         
-        self.test_connection()  # Test the database connection
+        self.test_connection() 
 
     def test_connection(self):
         try:
             with self.Session() as session:
-                # Use text() to explicitly declare the SQL statement
                 session.execute(text('SELECT 1'))
-            print("Database connection test successful.")
+            print("Database successfuly connected.")
+            print("Crawler is Running ....")
+            print("Please wait ....")
         except Exception as e:
             print(f"Database connection test failed: {e}")
 
     def process_item(self, item, spider):
         session = self.Session()
         image_path = item.get('image_path')
-        # print(f"Image path received in HotelPipeline: {image_path}")
         relative_image_path = self.get_relative_image_path(image_path)
-        # print(f"Image path to be inserted into the database: {relative_image_path}")
         hotel = HotelDetails(
             title=item.get('title'),
             rating=self.parse_float(item.get('rating')),
@@ -99,10 +98,7 @@ class ImageDownloadPipeline:
         if response.status_code == 200:
             with open(image_path, 'wb') as f:
                 f.write(response.content)
-            # item['image_path'] = image_path
             item['image_path'] = "property_images/" + image_name
-            print(f"Image path set in ImageDownloadPipeline: {item['image_path']}")
         else:
             raise DropItem(f"Failed to download image from {image_url}")
-
         return item

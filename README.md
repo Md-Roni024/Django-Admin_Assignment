@@ -4,7 +4,7 @@
 2. [Tools & Technologies](#technologies)
 3. [Project Structure](#project-structure) 
 5. [Run & Setup](#Running-the-project)
-6. [Schema Design](#Design-Database-Schema)
+6. [Schema Design](#Design-Database)
 7. [Contributing](#Contributing)
 8. [Contact](#Contact)
 10. [License](#license)
@@ -81,91 +81,15 @@ django_assignment/
 
 ```
 
-## Running-the-project
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Md-Roni024/Django-Assignment
-
-   ```
-
-2. Go to the project directory and Create Virtual Environment & activate
-    ```bash
-    cd django_assignment
-    python3 -m venv venv
-    source venv/bin/activate
-    ```
-
-
-3. Install all the dependencies :
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Create a .env file then add variables credentials as like:
-    ```bash
-    DB_USER=postgres
-    HOST=localhost
-    PASSWORD=p@stgress
-    PORT=5433
-    SCRAPY_DATABASE=scrapy_database
-    SCRAPY_DATABASE=django_database
-    ```
-5. Go to scrapy folder & Run Spider
-    ```bash
-    cd hotel_scrapper
-    scrapy crawl hotel_spider
-
-    ```
-7. Now Migrate the django datbase table
-
-    ```bash
-    cd ..
-    python manage.py makemigrations
-    python manage.py migrate
-
-    ```
-8. Run CLI Application to migrate data to django project database
-    ```bash
-      python start_cli.py
-
-    ```
-9. Run dajango admin
-
-   ```bash
-   python manage.py runserver
-   ```
-   Go to this url: http://127.0.0.1:8000/admin/
-
-10. Create super admin by terminal
-
-   ```bash
-    python manage.py createsuperuser
-    Username: 'Put Your Username'
-    Username: 'Put your password, minimum 8 alphanumeric character'
-   ```
-   Then login tho the dashboard
-
-
-## Demo Data that are scrap by spider:
-
-  ```json
-    {
-      "title": "Cititel Mid Valley",
-      "rating": "4.3",
-      "location": "Lingkaran Syed Putra, Mid Valley City, 59200 Kuala Lumpur, Wilayah Persekutuan",
-      "latitude": 3.117932,
-      "longitude": 101.678354,
-      "room_type": "Superior Twin Room",
-      "price": 57,
-      "image_url": "https://ak-d.tripcdn.com/images/hotel/136000/135821/67BA76B8-5DBA-4025-A417-701341BC8C3A_R_250_250_R5_D.jpg",
-      "image_path": "propert_images/67BA76B8-5DBA-4025-A417-701341BC8C3A_R_250_250_R5_D.jpg"
-    }
+### Design-Database
+- Create two different database name as:
   ```
+  CREATE DATABASE scrapy_database;
+  CREATE DATABASE django_database;
 
-  
-
-### Design-Database-Schema
-- Database for Scrapy
+  ```
+- Design table
     - Database name: scrapy_database
     - Create Table as 
         ```SQL
@@ -181,11 +105,9 @@ django_assignment/
             image_url TEXT,
             image_path TEXT
         );
+
         ```
-- Database for Django Assignment
-
-- Name: django_database
-
+- All table for django_database'
 - Table-1: myapp_property
   ```sql
     CREATE TABLE myapp_property (
@@ -250,6 +172,92 @@ django_assignment/
         FOREIGN KEY (property_id) REFERENCES property(property_id) ON DELETE SET NULL
     );
   ```
+
+
+## Running-the-project
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Md-Roni024/Django-Assignment
+
+   ```
+
+2. Go to the project directory and Create Virtual Environment & activate
+    ```bash
+    cd Django-Admin_Assignment
+    python3 -m venv venv
+    #For Linux or MacOS
+    source venv/bin/activate
+
+    #For Windows
+    venv\Scripts\activate
+    ```
+
+
+3. Install all the dependencies :
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Create a .env file then add variables credentials as like:
+    ```bash
+    DB_USER=postgres
+    HOST=localhost
+    PASSWORD=p@stgress
+    PORT=5433
+    SCRAPY_DATABASE=scrapy_database
+    SCRAPY_DATABASE=django_database
+    ```
+5. Go to scrapy folder & Run Spider
+    ```bash
+    cd django_assignment/hotel_scrapper
+    scrapy crawl hotel_spider
+    ```
+7. Now Migrate the django datbase table
+
+    ```bash
+    cd ..
+    python manage.py makemigrations
+    python manage.py migrate
+
+    ```
+8. Run CLI Application to migrate data to django project database
+    ```bash
+      python start_cli.py
+    ```
+
+9. Create super admin by terminal
+
+   ```bash
+    python manage.py createsuperuser
+    Username: 'Put Your Username'
+    Username: 'Put your password, minimum 8 alphanumeric character'
+   ```
+10. Run dajango admin
+
+   ```bash
+   python manage.py runserver
+   ```
+   Go to this url: http://127.0.0.1:8000/admin/
+
+
+
+## Demo Data that are scrap by spider:
+
+  ```json
+    {
+      "title": "Cititel Mid Valley",
+      "rating": "4.3",
+      "location": "Lingkaran Syed Putra, Mid Valley City, 59200 Kuala Lumpur, Wilayah Persekutuan",
+      "latitude": 3.117932,
+      "longitude": 101.678354,
+      "room_type": "Superior Twin Room",
+      "price": 57,
+      "image_url": "https://ak-d.tripcdn.com/images/hotel/136000/135821/67BA76B8-5DBA-4025-A417-701341BC8C3A_R_250_250_R5_D.jpg",
+      "image_path": "propert_images/67BA76B8-5DBA-4025-A417-701341BC8C3A_R_250_250_R5_D.jpg"
+    }
+  ```
+
+  
 
 ## Contributing
 - Contributing is an open invitation for collaboration on the project. You're encouraged to participate by opening issues for bugs or feature requests and submitting pull requests with your improvements or fixes. Your contributions help enhance and grow the project, making it better for everyone.

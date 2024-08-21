@@ -6,6 +6,7 @@ import logging
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.log import configure_logging
 import sys
+from scrapy import signals
 
 class TripSpider(scrapy.Spider):
     name = 'hotel_spider'
@@ -190,16 +191,15 @@ def spider_closed(spider):
     print("Scrapy successfully completed.")
 
 if __name__ == "__main__":
-   # Configure logging to suppress unnecessary output
     configure_logging(install_root_handler=False)
     logging.basicConfig(
-        level=logging.WARNING,  # Suppress info-level logs
+        level=logging.WARNING,
         format='%(levelname)s: %(message)s',
         stream=sys.stdout
     )
     
     process = CrawlerProcess({
-        'LOG_LEVEL': 'WARNING',  # Adjust log level if needed
+        'LOG_LEVEL': 'WARNING',
         'FEEDS': {
             'output.json': {
                 'format': 'json',
@@ -207,11 +207,10 @@ if __name__ == "__main__":
             }
         }
     })
-    process.crawl(TripSpider)
-    process.start(stop_after_crawl=True)
     
+    process.crawl(TripSpider)
+    
+    # Connect signals for opening and closing
     spider_opened(None)
+    process.start(stop_after_crawl=True)
     spider_closed(None)
-
-
-

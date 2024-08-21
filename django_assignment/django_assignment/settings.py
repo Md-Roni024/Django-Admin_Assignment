@@ -50,13 +50,12 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'django_assignment.wsgi.application'
+PASSWORD = os.getenv('PASSWORD', 'p@stgress')
+HOST = os.getenv('HOST', 'localhost')
+DATABASE = os.getenv('DJANGO_DATABASE', 'django_database')
+USERNAME = os.getenv('DB_USER', 'postgres')
+PORT = os.getenv('PORT', '5433')
 
-
-PASSWORD = quote_plus(os.getenv('PASSWORD')) or 'p@stgress'
-HOST = os.getenv('HOST') or 'localhost'
-DATABASE = os.getenv('DJANGO_DATABASE') or 'django_database'
-USERNAME = os.getenv('DB_USER') or 'postgres'
-PORT = os.getenv('PORT') or '5433'
 
 
 DATABASES = {

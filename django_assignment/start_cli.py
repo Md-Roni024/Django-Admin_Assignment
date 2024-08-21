@@ -8,19 +8,19 @@ load_dotenv()
 
 # Database configurations from .env file
 SOURCE_DB = {
-    'dbname': os.getenv('SCRAPY_DATABASE') or 'scrapy_database',
+    'dbname': os.getenv('SCRAPY_DATABASE', 'scrapy_database'),
     'user': os.getenv('DB_USER') or 'postgres',
-    'password': quote_plus(os.getenv('PASSWORD')) or 'p@stgress',
-    'host': os.getenv('HOST') or 'localhost',
-    'port': os.getenv('PORT') or '5433'
+    'password': os.getenv('PASSWORD', 'p@stgress'),
+    'host': os.getenv('HOST', 'localhost'),
+    'port': os.getenv('PORT', '5433')
 }
 
 DEST_DB = {
-    'dbname': os.getenv('DJANGO_DATABASE') or 'django_database',
+    'dbname': os.getenv('DJANGO_DATABASE', 'django_database'),
     'user': os.getenv('DB_USER') or 'postgres',
-    'password': quote_plus(os.getenv('PASSWORD')) or 'p@stgress',
-    'host': os.getenv('HOST') or 'localhost',
-    'port': os.getenv('PORT') or '5433'
+    'password': os.getenv('PASSWORD', 'p@stgress'),
+    'host': os.getenv('HOST', 'localhost'),
+    'port': os.getenv('PORT', '5433')
 }
 
 IMAGE_PATH = "property_images/"
