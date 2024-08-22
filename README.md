@@ -70,7 +70,7 @@ django_assignment/
 ### Design-Database
 - Create databasse for Django Project
   ```
-  CREATE DATABASE scrapy_database;
+  CREATE DATABASE django_database;
   ```
 
 
