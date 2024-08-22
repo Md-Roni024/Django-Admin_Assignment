@@ -2,13 +2,13 @@ import psycopg2
 from datetime import datetime
 import os
 from dotenv import load_dotenv
-from urllib.parse import quote_plus
+import requests
 
 load_dotenv()
 
 # Database configurations from .env file
 SOURCE_DB = {
-    'dbname': os.getenv('SCRAPY_DATABASE', 'scrapy_database'),
+    'dbname': os.getenv('SCRAPY_DATABASE', 'hotel_db'),
     'user': os.getenv('DB_USER') or 'postgres',
     'password': os.getenv('PASSWORD', 'p@stgress'),
     'host': os.getenv('HOST', 'localhost'),
@@ -23,7 +23,8 @@ DEST_DB = {
     'port': os.getenv('PORT', '5433')
 }
 
-IMAGE_PATH = "property_images/"
+# Update IMAGE_PATH to reflect the folder structure
+IMAGE_PATH = "media/property_images/"
 
 def confirm_migration():
     """Ask user for confirmation before proceeding with migration."""
@@ -32,6 +33,21 @@ def confirm_migration():
         if confirmation in ('yes', 'no'):
             return confirmation == 'yes'
         print("Invalid input. Please enter 'Yes' or 'No'.")
+
+def download_image(image_url, image_filename):
+    """Download image from a URL and save it to the specified file path."""
+    try:
+        response = requests.get(image_url, stream=True)
+        response.raise_for_status()  # Check if the request was successful
+        os.makedirs(os.path.dirname(image_filename), exist_ok=True)
+        with open(image_filename, 'wb') as file:
+            for chunk in response.iter_content(chunk_size=8192):
+                file.write(chunk)
+        print(f"Downloaded image from {image_url} to {image_filename}")
+        return image_filename
+    except Exception as e:
+        print(f"Failed to download image from {image_url}: {e}")
+        return None
 
 def migrate_data():
     """Perform the data migration from source to destination database."""
@@ -45,12 +61,20 @@ def migrate_data():
         dest_conn = psycopg2.connect(**DEST_DB)
         dest_cursor = dest_conn.cursor()
 
-        src_cursor.execute("SELECT id, title, price, room_type, rating, location, latitude, longitude, image_url, image_path FROM hotels_data")
+        src_cursor.execute("SELECT id, title, price, room_type, rating, location, latitude, longitude, image_url FROM hotels_data")
         rows = src_cursor.fetchall()
 
         for row in rows:
-            id, title, price, room_type, rating, location, latitude, longitude, image_url, image_path = row
+            id, title, price, room_type, rating, location, latitude, longitude, image_url = row
             current_time = datetime.now()
+
+            # Handle image download
+            image_filename = os.path.join(IMAGE_PATH, os.path.basename(image_url))
+            downloaded_image_path = download_image(image_url, image_filename)
+
+            # Use relative path for database entry
+            relative_image_path = os.path.join("property_images", os.path.basename(image_url))
+
             dest_cursor.execute("""
                 INSERT INTO myapp_property (title, description, price, room_type, rating, create_date, update_date) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
@@ -58,11 +82,13 @@ def migrate_data():
                 """, (title, "NULL", price, room_type, rating, current_time, current_time))
 
             property_id = dest_cursor.fetchone()[0]
-            full_image_path = os.path.join(IMAGE_PATH, os.path.basename(image_path))
-            dest_cursor.execute("""
-                INSERT INTO myapp_image (image, create_date, property_id, update_date) 
-                VALUES (%s, %s, %s, %s)
-                """, (full_image_path, current_time, property_id, current_time))
+
+            if downloaded_image_path:
+                dest_cursor.execute("""
+                    INSERT INTO myapp_image (image, create_date, property_id, update_date) 
+                    VALUES (%s, %s, %s, %s)
+                    """, (relative_image_path, current_time, property_id, current_time))
+            
             dest_cursor.execute("""
                 SELECT id FROM myapp_location WHERE name = %s AND type = %s AND longitude = %s AND latitude = %s
                 """, (location, "", longitude, latitude))

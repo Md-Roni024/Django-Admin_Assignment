@@ -101,5 +101,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 MEDIA_URL = '/media/'  
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
-
+# http://127.0.0.1:8000/media/property_images/Burj_arab.jpg
+# /home/w3e11/Desktop/Django-Admin_Assignment/django_assignment/media/property_images/1mc3f12000d272kqk5CF8_R_250_250_R5_D.jpg
+# http://127.0.0.1:8000/media/property_images/1mc3f12000d272kqk5CF8_R_250_250_R5_D.jpg
 

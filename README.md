@@ -19,8 +19,6 @@ This assignment is based on previous Scrapy assignment, where I grab hotels info
 
 ## Features
 
-- Scrape hotels data from Trip.com url
-- Store hotel image locally
 - Store Scrap data in Postgresql database.
 - Move hotels data from 'scrapy_database' to 'django_database' by CLI application.
 - Maintain proper data table realtionship with different property like:(One to Many , Many to Many)
@@ -61,19 +59,6 @@ django_assignment/
 │   ├── tests.py
 │   ├── views.py
 │   ├── urls.py
-│
-├── hotel_scrapper/
-│   ├── scrapy.cfg
-│   ├── hotel_scrapper/
-│   │   ├── __init__.py
-│   │   ├── items.py
-│   │   ├── middlewares.py
-│   │   ├── pipelines.py
-│   │   ├── settings.py
-│   │   ├── spiders/
-│   │   │   └── __init__.py
-│   │   │   └── hotel_spider.py
-│
 ├── manage.py
 ├── .gitignore
 ├── start_cli.py
@@ -83,94 +68,9 @@ django_assignment/
 
 
 ### Design-Database
-- Create two different database name as:
+- Create databasse for Django Project
   ```
   CREATE DATABASE scrapy_database;
-  CREATE DATABASE django_database;
-
-  ```
-- Design table
-    - Database name: scrapy_database
-    - Create Table as 
-        ```SQL
-        CREATE TABLE hotels_data (
-            id SERIAL PRIMARY KEY,
-            title VARCHAR(255),
-            rating FLOAT,
-            location VARCHAR(255),
-            latitude FLOAT,
-            longitude FLOAT,
-            room_type VARCHAR(255),
-            price FLOAT,
-            image_url TEXT,
-            image_path TEXT
-        );
-
-        ```
-- All table for django_database'
-- Table-1: myapp_property
-  ```sql
-    CREATE TABLE myapp_property (
-        property_id SERIAL PRIMARY KEY,
-        title VARCHAR(255) NOT NULL,
-        description TEXT NOT NULL,
-        create_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-        update_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
-    );
-  ```
-  - Table-2: myapp_location
-  ```sql
-    CREATE TABLE myapp_location (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        type VARCHAR(255) NOT NULL,
-        latitude DECIMAL(9, 6) NOT NULL,
-        longitude DECIMAL(9, 6) NOT NULL,
-        create_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-        update_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
-    );
-  ```
-  - Table-3: myapp_amenity
-  ```sql
-    CREATE TABLE myapp_amenity (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        create_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-        update_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
-    );
-  ```
-  - Table: myapp_property_locations
-  ```sql
-    CREATE TABLE property_locations (
-        property_id INTEGER NOT NULL,
-        location_id INTEGER NOT NULL,
-        PRIMARY KEY (property_id, location_id),
-        FOREIGN KEY (property_id) REFERENCES property(property_id) ON DELETE CASCADE,
-        FOREIGN KEY (location_id) REFERENCES location(id) ON DELETE CASCADE
-    );
-  ```
-
-    - Table: myapp_property_amenities
-  ```sql
-    CREATE TABLE myapp_property_amenities (
-        property_id INTEGER NOT NULL,
-        amenity_id INTEGER NOT NULL,
-        PRIMARY KEY (property_id, amenity_id),
-        FOREIGN KEY (property_id) REFERENCES property(property_id) ON DELETE CASCADE,
-        FOREIGN KEY (amenity_id) REFERENCES amenity(id) ON DELETE CASCADE
-    );
-  ```
-
-    - Table: myapp_image
-  ```sql
-    CREATE TABLE myapp_image (
-        id BIGSERIAL PRIMARY KEY,
-        property_id INTEGER,
-        image VARCHAR(255),
-        create_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-        update_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-        FOREIGN KEY (property_id) REFERENCES property(property_id) ON DELETE SET NULL
-    );
   ```
 
 
@@ -200,25 +100,22 @@ django_assignment/
    ```
 4. Create a .env file then add variables credentials as like:
     ```bash
-    DB_USER=postgres
-    HOST=localhost
-    PASSWORD=p@stgress
-    PORT=5433
-    SCRAPY_DATABASE=scrapy_database
-    SCRAPY_DATABASE=django_database
+      HOST=localhost
+      PORT=5433
+      DB_USER=postgres
+      PASSWORD=p@stgress
+      SCRAPY_DATABASE=hotel_db
+      DJANGO_DATABASE=django_database
     ```
-5. Go to scrapy folder & Run Spider
-    ```bash
-    cd django_assignment/hotel_scrapper
-    scrapy crawl hotel_spider
-    ```
-7. Now Migrate the django datbase table
+
+
+5. Now Migrate the django datbase table
 
     ```bash
-    cd ..
+    cd django_assignment
+
     python manage.py makemigrations
     python manage.py migrate
-
     ```
 8. Run CLI Application to migrate data to django project database
     ```bash
@@ -233,29 +130,11 @@ django_assignment/
     Username: 'Put your password, minimum 8 alphanumeric character'
    ```
 10. Run dajango admin
+    ```bash
+    python manage.py runserver
+    ```
 
-   ```bash
-   python manage.py runserver
-   ```
    Go to this url: http://127.0.0.1:8000/admin/
-
-
-
-## Demo Data that are scrap by spider:
-
-  ```json
-    {
-      "title": "Cititel Mid Valley",
-      "rating": "4.3",
-      "location": "Lingkaran Syed Putra, Mid Valley City, 59200 Kuala Lumpur, Wilayah Persekutuan",
-      "latitude": 3.117932,
-      "longitude": 101.678354,
-      "room_type": "Superior Twin Room",
-      "price": 57,
-      "image_url": "https://ak-d.tripcdn.com/images/hotel/136000/135821/67BA76B8-5DBA-4025-A417-701341BC8C3A_R_250_250_R5_D.jpg",
-      "image_path": "propert_images/67BA76B8-5DBA-4025-A417-701341BC8C3A_R_250_250_R5_D.jpg"
-    }
-  ```
 
   
 
